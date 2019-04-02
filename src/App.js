@@ -1,17 +1,46 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { moodSelected, appLoaded } from './redux'
+import {api_key} from './config.js'
 
 const moods = ['😎', '🤔', '😍', '👽', '🤠']
 
 class App extends React.Component {
 
+  state = {
+    gif: '',
+    gifSpinner: false,
+    currentMood: '🤔'
+  }
+
+  updateGif = (url) => this.setState({gif: url})
+
+  toggleSpinner = () => this.setState({gifSpinner: !this.state.gifSpinner})
+
+  updateMood = (emoji) => this.setState({currentMood: emoji}, this.fetchGif)
+
+  fetchGif = () => {
+    this.toggleSpinner()
+    let mood = this.state.currentMood
+    let url = `https://api.giphy.com/v1/gifs/random?tag=${mood}&api_key=${api_key}`
+    fetch(url)
+    .then(res => res.json())
+    .then(json => {
+      if (json.meta.status === 200) {
+        this.updateGif(json.data.image_url)
+        this.toggleSpinner()
+      }
+      else{
+        this.toggleSpinner()
+      }
+    })
+    .catch(err => this.toggleSpinner())
+  }
+
   componentDidMount() {
-    this.props.appLoaded()
+    this.fetchGif()
   }
 
   render() {
-    let { currentMood, moodSelected, gif, gifSpinner } = this.props
+    let { gif, gifSpinner, currentMood } = this.state
     return (
       <div className="root">
         <h1>current mood:</h1>
@@ -21,7 +50,7 @@ class App extends React.Component {
               key={mood}
               className="mood"
               style={{background: currentMood === mood && 'grey'}}
-              onClick={() => moodSelected(mood)}
+              onClick={() => this.updateMood(mood)}
             >
               {mood}
             </span>
@@ -36,15 +65,4 @@ class App extends React.Component {
   }
 }
 
-const mapStatetoProps = (state) => ({
-  gif: state.gif,
-  gifSpinner: state.gifSpinner,
-  currentMood: state.currentMood
-})
-
-const mapDispatchToProps = {
-  appLoaded,
-  moodSelected
-}
-
-export default connect(mapStatetoProps, mapDispatchToProps)(App)
+export default App
