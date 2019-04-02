@@ -7,15 +7,19 @@ class App extends React.Component {
 
   state = {
     gif: '',
-    gifSpinner: false,
+    gifLoading: false,
     currentMood: '🤔'
   }
 
   updateGif = (url) => this.setState({gif: url})
 
-  toggleSpinner = () => this.setState({gifSpinner: !this.state.gifSpinner})
+  toggleSpinner = () => {
+    this.setState({gifLoading: !this.state.gifLoading})
+  }
 
-  updateMood = (emoji) => this.setState({currentMood: emoji}, this.fetchGif)
+  updateMood = (emoji) => {
+    this.setState({currentMood: emoji}, this.fetchGif)
+  }
 
   fetchGif = () => {
     this.toggleSpinner()
@@ -40,7 +44,7 @@ class App extends React.Component {
   }
 
   render() {
-    let { gif, gifSpinner, currentMood } = this.state
+    let { gif, gifLoading, currentMood } = this.state
     return (
       <div className="root">
         <h1>current mood:</h1>
@@ -49,16 +53,18 @@ class App extends React.Component {
             <span
               key={mood}
               className="mood"
-              style={{background: currentMood === mood && 'grey'}}
+              style={{
+                background: currentMood === mood && 'grey'
+              }}
               onClick={() => this.updateMood(mood)}
             >
               {mood}
             </span>
           )}
         </div>
-        {gifSpinner
+        {gifLoading
           ? 'loading...'
-          : gif && <img src={gif} width='300px' alt='gif'/>
+          : <img src={gif} width='300px' alt='gif'/>
         }
       </div>
     )
