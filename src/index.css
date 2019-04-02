@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.root {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.mood {
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.picker {
+  display: flex;
+  justify-content: space-around;
+}
